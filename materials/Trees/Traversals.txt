@@ -1,0 +1,43 @@
+// Имаме 3 вида обхождане: ( в зависимост от местоположението на корена) 
+ - префиксни (preorder) - коренът задължително е първи => имаме 2 варианта сега:
+	- Корен, Ляво, Дясно
+	- Корен, Дясно, Ляво
+ - инфиксни (inorder) - коренът задължително е на втора позиция => имаме 2 варианта сега:
+	- Ляво, Корен, Дясно
+	- Дясно, Корен, Ляво
+ - постфиксни(postorder) - коренът задължително е последен => имаме 2 варианта сега:
+	- Ляво, Дясно, Корен
+	- Дясно, Ляво, Корен
+
+
+// Корен Ляво Дясно (ако е корен дясно ляво, двата реда на preorder ще са сменени)
+void preorder(Node* root){
+	if(root==nullptr){
+		return;
+	}
+	cout << root->data << ' ';
+	preorder(root->left);
+	preorder(root->right);
+}
+
+// Ляво Корен Дясно
+void inorder(Node* root){
+	if (root == nullptr){
+        	return;
+ 	}
+    
+    	inorder(root->left);
+    	cout << root->data << " ";
+    	inorder(root->right);
+}
+
+// Ляво Дясно Корен
+void postorder(Node* root){
+	if (root == nullptr){
+        	return;
+ 	}
+    
+    	inorder(root->left);
+    	inorder(root->right);
+	cout << root->data << " ";
+}
