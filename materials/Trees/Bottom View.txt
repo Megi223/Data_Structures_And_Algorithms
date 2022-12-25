@@ -1,0 +1,104 @@
+// Bottom View
+// task: having a binary tree in a coordinate system, where the root is on position (0,0) and 
+	each left child is in position (x-1,y-1) and each right child is in position (x+1,y-1)
+// idea: bfs and on each level we mark the last seen Node on this x-coordinate;
+		y marks the level
+#include <iostream>
+#include <vector>
+#include <limits>
+#include <algorithm>
+#include <queue>
+using namespace std;
+long long int minX = 0;
+struct Node {
+    size_t value;
+    Node* leftChild;
+    Node* rightChild;
+    long long int X;
+    long long int Y;
+    Node(size_t _val,long long int _X,long long int _Y) {
+        this->value = _val;
+        this->leftChild = nullptr;
+        this->rightChild = nullptr;
+        this->X = _X;
+        this->Y = _Y;
+    }
+    Node* addLeftChild(size_t val) {
+        Node* toBeAdded = new Node(val,this->X-1,this->Y-1);
+        if (this->X - 1 < minX) {
+            minX = this->X - 1;
+        }
+        this->leftChild = toBeAdded;
+        return toBeAdded;
+    }
+    Node* addRightChild(size_t val) {
+        Node* toBeAdded = new Node(val, this->X + 1, this->Y - 1);
+        this->rightChild = toBeAdded;
+        return toBeAdded;
+    }
+};
+
+Node* visited[10000001]= {nullptr};
+class Tree {
+    Node* root;
+    
+public:
+    Tree(Node* root) {
+        this->root = root;
+    }
+    Node* getRoot() {
+        return this->root;
+    }
+    void traverse() {
+        queue<Node*> q;
+        q.push(root);
+        while (!q.empty())
+        {
+            Node* current = q.front();
+            q.pop();
+            visited[current->X+abs(minX)] = current;
+            
+            if (current->leftChild != nullptr) {
+                q.push(current->leftChild);
+            }
+            if (current->rightChild != nullptr) {
+                q.push(current->rightChild);
+            }
+        }
+    }
+};
+
+int main() {
+    size_t N;
+    cin >> N;
+    vector<Node*> allNodes(1000001, nullptr);
+    long long int left, right;
+    cin >> left >> right;
+    Node* root = new Node(0, 0, 0);
+    Node* leftOfRoot = root->addLeftChild(left);
+    Node* rightOfRoot = root->addRightChild(right);
+    Tree tree(root);
+    allNodes[0] = root;
+    allNodes[left] = leftOfRoot;
+    allNodes[right] = rightOfRoot;
+    for (size_t i = 1; i < N; i++)
+    {
+        cin >> left >> right;
+        if (left != -1) {
+            Node* addedLeft = allNodes[i]->addLeftChild(left);
+            allNodes[left] = addedLeft;
+        }
+        if (right != -1) {
+            Node* addedRight = allNodes[i]->addRightChild(right);
+            allNodes[right] = addedRight;
+
+        }
+    }
+    tree.traverse();
+    for (size_t i = 0; i < 10000001; i++)
+    {
+        if(visited[i]!=nullptr){
+                    cout << visited[i]->value << ' ';
+        }
+    }
+}

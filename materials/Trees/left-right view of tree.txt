@@ -1,0 +1,25 @@
+// Right view of binary tree
+// idea: perform bfs and get the rightmost element on each level
+
+// second solution: (geeks for geeks)
+void rightViewUtil(struct Node* root, int level,
+                   int* max_level)
+{
+    // Base Case
+    if (root == NULL)
+        return;
+ 
+    // If this is the last Node of its level
+    if (*max_level < level) {
+        cout << root->data << "\t";
+        *max_level = level;
+    }
+ 
+    // Recur for right subtree first,
+    // then left subtree
+    rightViewUtil(root->right, level + 1, max_level);
+    rightViewUtil(root->left, level + 1, max_level);
+}
+
+//Left view of binary tree
+// idea: perform bfs and get the leftmoest element on each level

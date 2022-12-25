@@ -1,0 +1,34 @@
+// bfs with levels
+void printSFB(int K) {
+        queue<Node*> q;
+        q.push(root);
+        size_t currentLevel = 0;
+        size_t addedCnt = 0;
+        size_t numOfChildren = 1;
+        while (!q.empty()) {
+
+            for (int i = 0; i < numOfChildren; i++) {
+                Node* el = q.front();
+                q.pop();
+                if (currentLevel == K) {
+                    cout << el->value << ' ';
+                    while (!q.empty()) {
+                        cout << q.front()->value << ' ';
+                        q.pop();
+                    }
+                    break;
+                }
+                if (el->right != nullptr) {
+                    q.push(el->right);
+                    addedCnt++;
+                }
+                if (el->left != nullptr) {
+                    q.push(el->left);
+                    addedCnt++;
+                }
+            }
+            numOfChildren = addedCnt;
+            addedCnt = 0;
+            currentLevel++;
+        }
+    }
