@@ -1,0 +1,70 @@
+
+// bfs with levels
+
+void bfsLevel(size_t node, size_t N, unordered_map<size_t, size_t>& nodePath, unordered_map<size_t, list<size_t>>& graph) {
+    queue<size_t> elements;
+    elements.push(node);
+    size_t length = 0;
+    size_t cntAdded = 0;
+    size_t cntCurrentLevel = 1;
+    bool* visited = new bool[N] {false };
+    visited[node - 1] = true;
+
+    while (!elements.empty()) {
+
+        for (size_t j = 0; j < cntCurrentLevel; j++)
+        {
+            size_t curr = elements.front();
+
+            nodePath[curr] = length;
+            elements.pop();
+
+            for (auto i : graph[curr])
+            {
+
+                if (!visited[i - 1]) {
+                    elements.push(i);
+                    visited[i - 1] = true;
+                    cntAdded++;
+                }
+            }
+        }
+        length++;
+        cntCurrentLevel = cntAdded;
+        cntAdded = 0;
+    }
+}
+
+
+
+
+// second - K is the desired number of level
+queue<size_t> q;
+void bfs(size_t start,size_t K){
+    //queue<size_t> q;
+    q.push(start);
+    visited[start] = true;
+    size_t currentLevel = 0;
+    size_t addedOnLevel = 1;
+    size_t cntAdded = 0;
+    while(!q.empty()){
+        for(size_t i=0;i<addedOnLevel;i++){
+            size_t curr = q.front();
+            q.pop();
+            for(auto n:graph[curr]){
+                if(!visited[n]){
+                    visited[n]=true;
+                    q.push(n);
+                    cntAdded++;
+                }
+            }
+        }
+        currentLevel++;
+        if(currentLevel==K){
+            ans = cntAdded;
+            return;
+        }
+        addedOnLevel=cntAdded;
+        cntAdded = 0;
+    }
+}

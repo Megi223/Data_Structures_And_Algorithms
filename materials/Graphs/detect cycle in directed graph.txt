@@ -1,0 +1,64 @@
+// find cycle in directed graph
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+#include <list>
+#include <set>
+#include <queue>
+using namespace std;
+
+bool findCycle(size_t v,unordered_map<size_t, list<size_t>> &graph, size_t N){
+    queue<size_t> q;
+    q.push(v);
+    unordered_map<size_t, bool> visited={};
+    visited[v] = true;
+    while(!q.empty()){
+        size_t element = q.front();
+        q.pop();
+        
+        for(auto neighbour:graph[element]){
+            if(!visited[neighbour]){
+                q.push(neighbour);
+                visited[neighbour] = true;
+            }
+            if(neighbour==v){return true;}
+        }
+    }
+    return false;
+}
+
+
+int main() {
+    size_t Q, E,from, to;
+    cin >> Q;
+    vector<size_t> ans;
+    for(size_t i=0;i<Q;i++){
+        cin >> E;
+         unordered_map<size_t, list<size_t>> graph;
+        set<size_t> nodes;
+        for(size_t j=0;j<E;j++){
+            cin >> from >> to;
+            graph[from].push_back(to);
+            nodes.insert(from);
+            nodes.insert(to);
+            
+        }
+        bool hasCycle = false;
+        
+        for(auto v = nodes.begin();v!=nodes.end();v++){
+            hasCycle = findCycle(*v,graph,graph.size());
+            if(hasCycle){
+                break;
+            }
+        }
+        ans.push_back(hasCycle);
+        
+    }
+    for(size_t i=0;i<ans.size();i++){
+        cout << ans[i] << ' ';
+    }
+}

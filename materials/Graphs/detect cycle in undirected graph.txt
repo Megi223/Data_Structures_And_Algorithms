@@ -1,0 +1,16 @@
+// detect cycle in undirected graph
+unordered_map<int,bool> visited;
+unordered_map<int,list<int>> graph;
+bool findCycle(int v,int parent){
+        visited[v] = true;
+        for(auto neighbour:graph[v]){
+            if(neighbour != parent && visited[neighbour]){
+                return true;
+            }
+            if(!visited[neighbour]){
+                findCycle(neighbour,v);
+            }
+
+        }
+        return false;
+}
