@@ -1,0 +1,21 @@
+void dijkstra(size_t start){
+    for(size_t i=1;i<=N;i++){
+        distances[i] = LONG_MAX;
+    }
+    distances[start] = 0;
+    priority_queue<pair<size_t,size_t>,vector<pair<size_t,size_t>>,greater<pair<size_t,size_t>>> pq;
+    pq.push({0,start});
+    while(!pq.empty()){
+        
+        if (pq.top().first != distances[pq.top().second]) { pq.pop(); continue; }
+        size_t current = pq.top().second;
+        pq.pop();
+        for(auto e : graph[current]){
+            if(distances[e.first]>distances[current]+e.second){
+                distances[e.first]=distances[current]+e.second;
+                pq.push({distances[e.first],e.first});
+               
+            }
+        }
+    }
+}
