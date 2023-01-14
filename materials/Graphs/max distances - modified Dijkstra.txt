@@ -1,0 +1,54 @@
+// max distances between nodes in a graph - modified Dijkstra
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <climits>
+#include <unordered_map>
+#include <queue>
+using namespace std;
+
+unordered_map<size_t, long long int> distances;
+unordered_map<size_t, vector<pair<size_t, long long int>>> graph;
+size_t N;
+void modifiedDijkstra(size_t source) {
+    for (size_t i = 1; i <= N; i++) {
+        distances[i] = LONG_MIN;
+    }
+    distances[source] = 0;
+    priority_queue<pair<long long int, size_t>, vector<pair<long long int, size_t>>, greater<pair<long long int, size_t>>> pq;
+    pq.push({ 0,source });
+    while (!pq.empty()) {
+        if (distances[pq.top().second] != pq.top().first) { pq.pop(); continue; }
+        size_t current = pq.top().second;
+        pq.pop();
+        for (auto n : graph[current]) {
+            if (distances[n.first] < distances[current] + n.second) {
+                distances[n.first] = distances[current] + n.second;
+                pq.push({ distances[n.first],n.first });
+            }
+        }
+    }
+}
+
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t M, from, to, source, dest;
+    long long weight;
+    cin >> N >> M >> source >> dest;
+    for (size_t i = 0; i < M; i++) {
+        cin >> from >> to >> weight;
+        graph[from].push_back({ to,weight });
+    }
+    
+    modifiedDijkstra(source);
+    if (distances[dest] == LONG_MIN) {
+        cout << -1;
+        return 0;
+    }
+    cout << distances[dest];
+}
