@@ -1,0 +1,54 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <set>
+#include <unordered_map>
+using namespace std;
+
+unordered_map<size_t,vector<pair<size_t,size_t>>> graph;
+set<size_t> specialNums;
+
+bool checkPath(size_t from,size_t to){
+    for(auto adj : graph[from]){
+        if(adj.first==to && specialNums.find(adj.second)==specialNums.end()){
+            return true;
+        }
+    }
+    return false;
+}
+
+int main() {
+    size_t N, M, from ,to, K,T,weight,num;
+    cin >> N >> M;
+    for(size_t i=0;i<M;i++){
+        cin >> from >> to >> weight;
+        graph[from].push_back({to,weight});
+    }
+    cin >> K;
+    for(size_t i = 0;i<K;i++){
+        cin >> num;
+        specialNums.insert(num);
+        
+    }
+    cin >> T;
+    vector<bool> ans;
+    for(size_t i=0;i<T;i++){
+        cin >> num >> from;
+        size_t prev = from;
+        bool flag = true;
+        for(size_t j=1;j<num;j++){
+            cin >> from;
+            bool success = checkPath(prev,from);
+            if(!success){
+                flag = false;
+            }
+            prev = from;
+        }
+        ans.push_back(flag);
+    }
+    for(size_t i=0;i<T;i++){
+        cout << ans[i];
+    }
+}
