@@ -1,0 +1,129 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <unordered_map>
+using namespace std;
+
+
+size_t N;
+//unordered_map<size_t,vector<pair<size_t,size_t>>> graph;
+vector<pair<size_t,size_t>> globalAns;
+    unordered_map<size_t, size_t> frequency;
+
+bool checkParents(size_t v,unordered_map<size_t,size_t> &parents){
+    unordered_map<size_t,bool> visitedPar;
+    
+    while(parents[v]!=v){
+        if(visitedPar[v]){return false;}
+        visitedPar[v] = true;
+        v = parents[v];
+    }
+    return true;
+}
+
+void bfs(size_t vertex, size_t K, size_t**& graph) {
+    queue<size_t> q;
+    q.push(vertex);
+    unordered_map<size_t,bool> visited;
+    unordered_map<size_t,size_t> parents;
+    unordered_map<size_t, size_t> paths;
+
+
+    size_t cntAdded = 0;
+    size_t cntCurrentLevel = 1;
+    parents[vertex] = vertex;
+    //visited[vertex]=true;
+    priority_queue<pair<size_t, size_t>> ans;
+
+    while (!q.empty()) {
+
+        for (size_t j = 0; j < cntCurrentLevel; j++)
+        {
+            size_t curr = q.front();
+
+
+            q.pop();
+
+            for (size_t i = 0; i < N; i++)
+            {
+
+                if (i!=curr && graph[curr][i] != 0) {
+                    parents[i] = curr;
+                    bool check = checkParents(i,parents);
+                    if(check){
+                        q.push(i);
+                        visited[i]=true;
+
+                        //parents[i] = curr;
+                        paths[i] = paths[curr] + graph[curr][i];
+
+                        if (K == 1) {
+                           frequency[paths[i]]++;
+                           ans.push({ frequency[paths[i]],paths[i] });
+                        }
+  
+                        cntAdded++;
+                    }
+                    
+                }
+
+            }
+
+        }
+
+        K--;
+        //if(K==0){break;}
+        if (K == 0 ) {
+            if(!ans.empty())
+            {size_t f = ans.top().first;
+            globalAns.push_back(ans.top());
+            ans.pop();
+            while (!ans.empty() && ans.top().first == f) {
+                globalAns.push_back(ans.top());
+
+                ans.pop();
+            }}
+            break;
+        }
+        cntCurrentLevel = cntAdded;
+        cntAdded = 0;
+    }
+
+}
+
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t M, from, to, weight, K;
+    cin >> N >> M;
+    size_t** graph = new size_t * [N];
+    for (size_t i = 0; i < N; i++) {
+        graph[i] = new size_t[N];
+        for (size_t j = 0; j < N; j++) {
+            graph[i][j] = 0;
+        }
+    }
+    for (size_t i = 0; i < M; i++) {
+        cin >> from >> to >> weight;
+        graph[from - 1][to - 1] = weight;
+    }
+    cin >> K;
+    for (size_t i = 0; i < N; i++) {
+        bfs(i, K, graph);
+    }
+    if (globalAns.size() == 0) {
+        cout << -1;
+    }
+    else {
+        sort(globalAns.begin(),globalAns.end());
+        /*for(size_t k = 0;k<globalAns.size();k++){
+            cout << globalAns[k].first << ' ' << globalAns[k].second;
+        }*/
+        
+        cout << globalAns[globalAns.size()-1].second;
+    }
+}
