@@ -1,0 +1,76 @@
+// Kruskal's algorithm
+
+#include <vector>
+#include <algorithm>
+#include <iostream>
+using namespace std;
+
+const size_t MAX = 10000000;
+struct Edge {
+	size_t from;
+	size_t weight;
+	size_t to;
+};
+
+size_t n, m;
+vector<Edge> edges;
+
+// mst[i] = all connections from i to j with weight w
+vector<pair<size_t, size_t>> mst[MAX];
+
+size_t parent[MAX];
+
+size_t findRoot(size_t u) {
+	if (parent[u] == u) {
+		return u;
+	}
+	return parent[u] = findRoot(parent[u]);
+	/*int ans = findRoot(parent[u]);
+	parent[u] = ans;
+	return ans;*/
+}
+
+void makeUnion(size_t u, size_t v) {
+	size_t rootU = findRoot(u);
+	size_t rootV = findRoot(v);
+	if (rootU==rootV) { return; }
+	parent[rootV] = rootU;
+
+}
+
+void init(size_t u) {
+	parent[u] = u;
+}
+
+void kruskal() {
+	sort(edges.begin(), edges.end());
+	for (size_t i = 0; i < n; i++)
+	{
+		init(i);
+	}
+	size_t compCount = n;
+	for (Edge& edge:edges)
+	{
+		// useful optimisation for dense graphs
+		if (compCount == 1) { return; }
+
+		size_t root1 = findRoot(edge.from);
+		size_t root2 = findRoot(edge.to);
+		if (root1 != root2) {
+			makeUnion(root1, root2);
+			
+			mst[edge.from].push_back({ edge.to,edge.weight });
+			mst[edge.to].push_back({ edge.from,edge.weight });
+			compCount--;
+			
+
+		}
+	}
+	if (compCount > 1) {
+		cout << "Graph is not connected";
+	}
+}
+
+int main() {
+
+}
