@@ -1,0 +1,33 @@
+Parse input of type: 
+4
+add 3
+add 52
+add 100
+
+#include <sstream>
+#include <string>
+using namespace std;
+   size_t N;
+   
+   cin >> N;
+   cin.ignore();
+   
+    for(size_t i=0;i<N;i++){
+         std::string line; getline(std::cin, line);
+         std::istringstream istr(line);
+
+         std::string command; istr >> command;
+
+       
+        if(command=="add"){
+            long long num;
+            istr >> num; 
+           
+            //logic 
+        }
+        else{
+            
+           //logic
+        }
+    }
+    
