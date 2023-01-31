@@ -1,0 +1,17 @@
+Node* add(Node* current, long long int num){
+        if(current==nullptr){
+            current = new Node(num);
+            
+        }
+        else{
+            if(num > current->data){            
+                current->rightChild = add(current->rightChild,num);
+
+            }
+            else{
+                current->leftChild = add(current->leftChild,num);
+            }
+        }
+        
+        return current;
+    }
