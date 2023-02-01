@@ -1,0 +1,69 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+using namespace std;
+
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t T, N;
+    cin >> T;
+    long long int num;
+    
+    for(size_t i=0;i<T;i++){
+        cin >> N;
+        vector<long long int> negative;
+        vector<long long int> positive;
+        for(long long int j=0;j<N;j++){
+            cin >> num;
+            if(num<=0){
+                negative.push_back(num);
+            }
+            else{
+                positive.push_back(num);
+            }
+        }
+        sort(negative.begin(),negative.end());
+        sort(positive.begin(),positive.end());
+        
+        long long int ans = 0;
+        long long int negativeSize = negative.size();
+        long long int positiveSize = positive.size();
+
+        if(negative.size()%2==0){
+           
+            for(int j=0;j<negativeSize-1;j+=2){
+                ans+=negative[j]*negative[j+1];
+            }
+        }
+        else{
+            for(int j=0;j<negativeSize-1;j+=2){
+                ans+=negative[j]*negative[j+1];
+            }
+            ans+=negative[negative.size()-1];
+        }
+        if(positive.size()%2==0){
+            for(int j=positiveSize-1;j>0;j-=2){
+                if(positive[j]==1 || positive[j-1]==1){
+                    ans+=positive[j]+positive[j-1];
+                    continue;
+                }
+                ans+=positive[j]*positive[j-1];
+            }
+        }
+        else{
+            for(int j=positiveSize-1;j>1;j-=2){
+                if(positive[j]==1 || positive[j-1]==1){
+                    ans+=positive[j]+positive[j-1];
+                    continue;
+                }
+                ans+=positive[j]*positive[j-1];
+            }
+            ans+=positive[0];
+        }
+        cout << ans << '\n';
+    }
+}
