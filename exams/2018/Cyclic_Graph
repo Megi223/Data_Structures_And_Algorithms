@@ -1,0 +1,54 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <unordered_map>
+using namespace std;
+
+bool findCycle(size_t v,unordered_map<size_t, vector<size_t>> &graph, size_t N){
+    queue<size_t> q;
+    q.push(v);
+    unordered_map<size_t, bool> visited={};
+    visited[v] = true;
+    while(!q.empty()){
+        size_t element = q.front();
+        q.pop();
+        
+        for(auto neighbour:graph[element]){
+            if(!visited[neighbour]){
+                q.push(neighbour);
+                visited[neighbour] = true;
+            }
+            if(neighbour==v){return true;}
+        }
+    }
+    return false;
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t Q,V,E,x,y,w;
+    cin>>Q;
+    for(size_t i=0;i<Q;i++){
+        cin >> V >> E;
+        unordered_map<size_t,vector<size_t>> graph;
+        for(size_t j=0;j<E;j++){
+            cin >> x >> y >> w;
+            graph[x].push_back(y);
+        }
+        bool hasCycle = false;
+        for(size_t j=0;j<V;j++){
+           hasCycle = findCycle(j,graph,V);
+            if(hasCycle){
+                cout << "true" << ' ';
+                break;
+            }
+        }
+        if(!hasCycle){
+            cout << "false" << ' ';
+        }
+    }
+}
