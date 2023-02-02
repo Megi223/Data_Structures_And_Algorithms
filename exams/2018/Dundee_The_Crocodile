@@ -1,0 +1,26 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+#include <set>
+using namespace std;
+
+
+int main() {
+    string word;
+    unordered_map<string,size_t> encounters;
+    while(cin >> word){
+        encounters[word]++;
+    }
+    set<string> words;
+    for(auto iter=encounters.begin();iter!=encounters.end();iter++){
+        if(iter->second==1){
+            words.insert(iter->first);
+        }
+    }
+    for(auto iter=words.begin();iter!=words.end();iter++){
+        cout << *iter << '\n';
+    }
+}
