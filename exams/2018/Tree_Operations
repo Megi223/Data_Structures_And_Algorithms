@@ -1,0 +1,180 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <set>
+#include <sstream>
+#include <string>
+#include <queue>
+using namespace std;
+
+struct Node{
+    long long int data;
+    Node* leftChild;
+    Node* rightChild;
+    Node(long long int num){
+        data=num;
+        leftChild=nullptr;
+        rightChild = nullptr;
+    }
+};
+
+
+struct Tree{
+   Node* root;
+    Node* add(Node* current, long long int num){
+        if(current==nullptr){
+            current = new Node(num);
+            
+        }
+        else{
+            if(num > current->data){            
+                current->rightChild = add(current->rightChild,num);
+
+            }
+            else{
+                current->leftChild = add(current->leftChild,num);
+            }
+        }
+        
+        return current;
+    }
+    
+    void print(Node* current){
+        if(current==nullptr){return;}
+        cout << current->data << ' ';
+        print(current->leftChild);
+        print(current->rightChild);
+
+    }
+    
+    void printOddLayers(){
+        queue<Node*> q;
+        q.push(root);
+        size_t currentLevel = 1;
+        vector<long long int> ans;
+        size_t sizeCurrentLevel = 1;
+        size_t cnt = 0;
+        while(!q.empty()){
+            
+            
+            for(size_t i=0;i<sizeCurrentLevel;i++){
+                Node* current = q.front();
+                q.pop();
+                if(current->leftChild!=nullptr){
+                    q.push(current->leftChild);
+                    cnt++;
+                }
+                if(current->rightChild!=nullptr){
+                    q.push(current->rightChild);
+                    cnt++;
+                }
+                if(currentLevel%2==1){
+                    ans.push_back(current->data);
+                }
+            }
+            sizeCurrentLevel = cnt;
+            cnt = 0;
+            
+            currentLevel++;
+        }
+        
+        
+        
+        for(size_t i=0;i<ans.size();i++){
+            cout << ans[i] << ' ';
+        }
+    }
+    
+    Node* getNode(long long int X, Node* current){
+        //if(current==nullptr){return;}
+        if(current->data==X){return current;}
+        if(current->leftChild){
+            return getNode(X,current->leftChild);
+        }
+        if(current->rightChild){
+            return getNode(X,current->rightChild);
+        }
+        return nullptr;
+        
+    }
+    
+    void remove(long long int X){
+        Node* XNode = getNode(X,root);
+        if(XNode->leftChild==nullptr && XNode->rightChild==nullptr){
+            XNode=nullptr;
+        }
+        else if(XNode->leftChild==nullptr && XNode->rightChild!=nullptr){
+            XNode->data = XNode->rightChild->data;
+            XNode->rightChild = nullptr;
+        }
+        else if(XNode->leftChild!=nullptr && XNode->rightChild==nullptr){
+            XNode->data = XNode->leftChild->data;
+            XNode->leftChild = nullptr;
+        }
+        else{
+            Node* right=XNode->rightChild;
+            
+            while(right){
+                
+                if(right->leftChild==nullptr){
+                    break;
+                }
+                right=right->leftChild;
+            }
+            
+            XNode->data=right->data;
+            right=nullptr;
+        }
+    }
+};
+
+int main() {
+    size_t N;
+   
+   cin >> N;
+   cin.ignore();
+   
+    Tree tree;
+    
+    Node* root = nullptr;
+    
+    set<long long int> currentElements;
+    for(size_t i=0;i<N;i++){
+         std::string line; getline(std::cin, line);
+         std::istringstream istr(line);
+
+         std::string command; istr >> command;
+
+       
+        if(command=="add"){
+            long long num;
+            istr >> num; 
+           
+            if(currentElements.find(num)==currentElements.end()){
+                root = tree.add(root, num);
+                currentElements.insert(num);
+                if(currentElements.size()==1){
+                    tree.root=root;
+                }
+            }
+        }
+        else if(command=="print"){
+            
+            tree.print(root);
+        }
+        else if(command=="remove"){
+            long long num;
+            istr >> num; 
+            if(currentElements.find(num)!=currentElements.end()){
+                tree.remove(num);
+            }
+            
+        }
+        else{
+            tree.printOddLayers();
+        }
+    }
+    
+}
