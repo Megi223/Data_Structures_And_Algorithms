@@ -1,0 +1,46 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+using namespace std;
+
+
+int main() {
+    size_t N, M;
+    long long int num;
+    cin >> N >> M;
+    vector<long long int> first;
+    vector<size_t> answer;
+    unordered_map<long long int,size_t> numPos;
+    for(size_t i=0;i<N;i++){
+        cin >> num;
+        first.push_back(num);
+        //numPos[num] = i;
+    }
+    sort(first.begin(),first.end());
+     for(size_t i=0;i<N;i++){
+         if(numPos.find(first[i])==numPos.end()){
+             numPos[first[i]] = i;
+         }
+        
+    }
+    long long int secondNumber;
+    for(size_t i=0;i<M;i++){
+        cin >> secondNumber;
+        auto ans = lower_bound(first.begin(),first.end(),secondNumber);
+        if(ans==first.end()){
+            
+            answer.push_back(N);
+            continue;
+        }
+        
+        answer.push_back(numPos[*ans]);
+        
+    }
+    
+    for(size_t i=0;i<M;i++){
+        cout << answer[i] << ' ';
+    }
+}
