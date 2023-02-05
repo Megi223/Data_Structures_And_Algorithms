@@ -1,0 +1,47 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+#include <queue>
+using namespace std;
+
+vector<size_t> numbers;
+queue<size_t> currentElements;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t N,num;
+    cin >> N;
+  
+    for(size_t i=0;i<N;i++){
+        cin >> num;
+        numbers.push_back(num);
+    }
+
+    size_t globalAns = 1;
+    unordered_map<size_t,size_t> encounters;
+    for(size_t i=0;i<N;i++){
+        
+        encounters[numbers[i]]++;
+        if(encounters[numbers[i]]==1){
+            currentElements.push(numbers[i]);
+        }
+        else if(encounters[numbers[i]]>=2){
+            while(currentElements.front()!=numbers[i]){
+                encounters[currentElements.front()]--;
+                currentElements.pop();
+                
+            }
+            currentElements.pop();
+            encounters[numbers[i]]--;
+            currentElements.push(numbers[i]);
+            
+        }
+        globalAns = max(globalAns,currentElements.size());
+        
+    }
+    cout << globalAns;
+}
