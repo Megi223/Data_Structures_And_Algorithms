@@ -1,0 +1,84 @@
+/*bfs with levels*/
+
+#include <map>
+#include <set>
+#include <list>
+#include <cmath>
+#include <ctime>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <string>
+#include <bitset>
+#include <cstdio>
+#include <limits>
+#include <vector>
+#include <climits>
+#include <cstring>
+#include <cstdlib>
+#include <fstream>
+#include <numeric>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+#include <queue>
+
+using namespace std;
+
+void findDistances(size_t startIndex, unordered_map<size_t,vector<size_t>> &graph,size_t N){
+    unordered_map<size_t,bool> visited;
+    unordered_map<size_t,size_t> ans;
+    queue<size_t> q;
+    q.push(startIndex);
+    size_t currentLevel = 1;
+    size_t cntCurrentLevel = 1;
+    size_t cntAdded = 0;
+    while(!q.empty()){
+        
+        for(size_t i=0;i<cntCurrentLevel;i++){
+            size_t current = q.front();
+            q.pop();
+            for(auto n:graph[current]){
+                if(!visited[n]){
+                    visited[n]=true;
+                    ans[n] = 6*currentLevel;
+                    q.push(n);
+                    cntAdded++;
+                }
+            }
+        }
+        cntCurrentLevel=cntAdded;
+        cntAdded=0;
+        currentLevel++;
+    }
+    
+    for(size_t i=1;i<=N;i++){
+        if(i==startIndex){
+            continue;
+        }
+        if(ans[i]==0){
+            cout << -1 << ' ';
+            continue;
+        }
+        cout << ans[i] << ' ';
+    }
+    cout << '\n';
+}
+
+int main() {
+    size_t Q;
+    cin >> Q;
+    for(size_t i=0;i<Q;i++){
+        size_t N,M,from,to,startIndex;
+        cin >> N >> M;
+        unordered_map<size_t,vector<size_t>> graph;
+        for(size_t j=0;j<M;j++){
+            cin >> from >> to;
+            graph[from].push_back(to);
+            graph[to].push_back(from);
+        }
+        cin >> startIndex;
+        findDistances(startIndex, graph, N);
+    }
+}
