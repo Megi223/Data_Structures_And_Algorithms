@@ -1,0 +1,66 @@
+#include <map>
+#include <set>
+#include <list>
+#include <cmath>
+#include <ctime>
+#include <deque>
+#include <queue>
+#include <stack>
+#include <string>
+#include <bitset>
+#include <cstdio>
+#include <limits>
+#include <vector>
+#include <climits>
+#include <cstring>
+#include <cstdlib>
+#include <fstream>
+#include <numeric>
+#include <sstream>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+
+using namespace std;
+
+vector<size_t> times;
+
+bool checkTime(size_t time,size_t target){
+    size_t total = 0;
+    for(size_t i = 0;i<times.size();i++){
+        total+=time/times[i];
+    }
+    return total>=target;
+}
+
+size_t binarySearch(size_t l,size_t r,size_t target){
+    bool enoughTime = true;
+    while(l<=r){
+        size_t m = l + (r - l) / 2;
+        
+        enoughTime = checkTime(m, target);
+        if(enoughTime){
+            r = m-1;
+        }
+        else{
+            l = m+1;
+        }
+    }
+    return r+1;
+}
+
+
+
+int main() {
+    size_t N, K, time;
+    cin >> N >> K;
+
+    for(size_t i=0;i<K;i++){
+        cin >> time;
+        times.push_back(time);
+    }
+    sort(times.begin(),times.end());
+    size_t maxTime = N*times[K-1];
+    size_t ans = binarySearch(0,maxTime, N);
+    cout << ans;
+}
