@@ -1,0 +1,25 @@
+class Solution {
+public:
+    int findPairs(vector<int>& nums, int k) {
+        unordered_map<long long int,size_t> encounters;
+        
+        for(size_t i=0;i<nums.size();i++){
+            encounters[nums[i]]++;
+            
+        }
+        
+        set<pair<long long int,long long int>> pairs;
+        for(size_t i=0;i<nums.size();i++){
+            size_t currentNum = nums[i];
+            encounters[currentNum]--;
+            long long int wanted = currentNum-k;
+            auto iter = encounters.find(wanted);
+            if(iter!=encounters.end() && iter->second>0){
+                pairs.insert({currentNum,wanted});
+            }
+            encounters[currentNum]++;
+
+        }
+        return pairs.size();
+    }
+};
