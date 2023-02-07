@@ -1,0 +1,28 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+using namespace std;
+
+int main() {
+    unordered_map<string,size_t> rows;
+    size_t N,M,cnt=0;
+    char num;
+    cin >> N >> M;
+    for(size_t i=0;i<N;i++){
+        string str;
+        for(size_t j=0;j<M;j++){
+            cin >> num;
+            str+=num;
+        }
+        rows[str]++;
+    }
+    for(auto iter=rows.begin();iter!=rows.end();iter++){
+        if(iter->second==1){
+            cnt++;
+        }
+    }
+    cout << cnt;
+}
