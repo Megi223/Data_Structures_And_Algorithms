@@ -1,0 +1,50 @@
+/*find if path is valid in a given graph*/
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <unordered_map>
+using namespace std;
+
+
+int main() {
+    size_t N, K;
+    size_t from,to,weight;
+    cin >> N >> K;
+    unordered_map<size_t,vector<pair<size_t,size_t>>> graph;
+    for(size_t i=0;i<K;i++){
+        cin >> from >> to >> weight;
+        graph[from].push_back({to,weight});
+        graph[to].push_back({from,weight});
+    }
+    size_t num;
+    cin >> K;
+    cin >> num;
+    size_t prev = num;
+    bool hasPath = true;
+    long long int ans = 0;
+    for(size_t i=1;i<K;i++){
+        if(hasPath){
+            cin >> num;
+            hasPath = false;
+            for(auto n:graph[prev]){
+            if(n.first==num){
+                ans+=n.second;
+                hasPath = true;
+                break;
+            }
+            }
+            prev = num;
+        }
+        
+        
+    }
+    if(hasPath){
+        cout << ans;
+    }
+    else{
+        cout << -1;
+    }
+}
