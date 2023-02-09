@@ -1,0 +1,54 @@
+// X - count blocks to reverse
+    Node* reverse(Node* start, long long int X) {
+        Node* current = start;
+        Node* copyStart = start;
+        long long int copyX = X;
+        
+        Node* prevToBe = start->prev;
+        
+        
+        Node* next = nullptr;
+        Node* prevToCurr = nullptr;
+        while (X > 0 && current) {
+            next = current->next;
+            Node* prev = current->prev;
+            current->prev = next;
+            current->next = prev;
+            if (next == nullptr) {
+                break;
+            }
+            prevToCurr = current;
+            current = next;
+            X--;
+        }
+        if (next == nullptr && prevToBe == nullptr) {
+           
+            head = current;
+            return current;
+        }
+        if (next == nullptr) {
+            current->prev = prevToBe;
+            prevToBe->next = current;
+            start->next = nullptr;
+            return start;
+        }
+        if (start == head) {
+            head = current->prev;
+        }
+        Node* nextToBe = current;
+        if (nextToBe) {
+
+            nextToBe->prev = start;
+        }
+        start->next = nextToBe;
+        if (current) {
+            
+            prevToCurr->prev = prevToBe;
+            if (prevToBe) {
+
+                prevToBe->next = prevToCurr;
+            }
+        }
+        return current;
+        
+    }

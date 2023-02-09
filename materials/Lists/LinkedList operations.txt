@@ -1,0 +1,156 @@
+// count
+int SinglyLinkedList::count(int X)
+{
+	Node* curr = head;
+    int counter = 0;
+    while(curr){
+        if(curr->value == X){
+            counter++;
+        }
+        curr = curr->next;
+    }
+    return counter;
+}
+
+// removeAll
+void SinglyLinkedList::removeAll(int X)
+{
+    Node* curr = head;
+    Node* prev = nullptr;
+    while(head && head->value==X){
+        Node* temp = head->next;
+        delete head;
+        head = temp;
+        size--;
+    }
+    while(curr){
+        if(curr->value==X){
+            Node* temp = curr->next;
+            prev->next = curr->next;
+            delete curr;
+            size--;
+            curr = temp;
+            continue;
+        }
+        prev = curr;
+        curr = curr->next;
+    }
+}
+
+// group(start,finish)
+void SinglyLinkedList::group(int start, int end)
+{
+    if(start<0 || end>=size || start>end){
+        std::cout<<"fail_grouping";
+        return;
+    }
+    if(start==end){return;}
+
+    Node* curr = head;
+    Node* prev = nullptr;
+    int currentPos = 0;
+    int numberOfIters = end-start+1;
+    bool started = false;
+    int sum=0;
+    Node* tempPrevToSum = nullptr;
+    Node* tempNextToSum=nullptr;
+
+    if(start == 0){
+        for(int i = 0;i<=end;i++){
+            sum+=curr->value;
+            curr= curr->next;
+            delete head;
+            head = curr;
+        }
+        addAtHead(sum);
+        return;
+    }
+    while(curr){
+        if(currentPos==start){
+            started = true;
+            sum += curr->value;
+            tempPrevToSum = prev;
+            prev->next = curr->next;
+            curr=curr->next;
+            size--;
+            //continue;
+        }
+        else if(currentPos == end){
+            started = false;
+            sum += curr->value;
+            tempNextToSum = curr->next;
+            Node* nodeToBeAdded = new Node(sum);
+            prev->next = nodeToBeAdded;
+            nodeToBeAdded->next = curr->next;
+            break;
+        }
+        else if(started){
+            sum += curr->value;
+            prev->next = curr->next;
+            curr=curr->next;
+            size--;
+        }
+        
+        else{
+            prev = curr;
+            curr = curr->next;
+        }
+        
+        currentPos++;
+    }
+}
+
+
+// reverse - iterative - whole list
+SinglyLinkedListNode* reverse(SinglyLinkedListNode* llist) {
+    if(llist==nullptr){
+        return nullptr;
+    }
+    if(llist->next == nullptr){
+        return llist;
+    }
+    SinglyLinkedListNode* prev = nullptr;
+    SinglyLinkedListNode* curr = llist;
+    while(curr){
+        SinglyLinkedListNode* temp = curr->next;
+        curr->next = prev;
+        prev = curr;
+        curr = temp;
+    }
+    return prev;
+
+}
+
+//changing head and tail - whole list
+void reverse(){
+if (head == nullptr) {
+            return;
+        }
+        if (head->next == nullptr) {
+            return;
+        }
+        Node* oldHead = head;
+        Node* prev = nullptr;
+        Node* curr = head;
+        while (curr) {
+            Node* temp = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = temp;
+        }
+        head = prev;
+        tail = oldHead;
+        tail->next = nullptr;
+
+}
+
+// reverse whole list recursive
+ListNode* reverseList(ListNode* head)
+{
+	if(head==nullptr||head->next==nullptr){return head;}
+	ListNode* newHead = reverseList(head->next);
+	head->next->next = head;
+	head->next = nullptr;
+	return newHead;
+
+}

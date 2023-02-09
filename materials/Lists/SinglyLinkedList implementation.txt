@@ -1,0 +1,281 @@
+struct Node {
+    int data;
+    Node* next;
+    Node(int val, Node* _next = nullptr) : data(val), next(_next) { }
+};
+
+class LinkedList {
+public:
+    void add(int val, int pos) {
+        if (pos < 0 || pos > size) {
+            if (tail != nullptr) {
+                Node* newNode = new Node(val, nullptr);
+                tail->next = newNode;
+                tail = newNode;
+                //tail->next = nullptr;
+                //size++;
+                
+            }
+            else if (tail == nullptr) {
+                Node* newHead = new Node(val, head);
+                head = newHead;
+                tail = newHead;
+                //size++;
+                
+            }
+            size++;
+            cout << "add_last";
+                return;
+        }
+
+        if (head == nullptr || pos == 0) {
+            Node* newHead = new Node(val, head);
+            head = newHead;
+            if (tail == nullptr) {
+                tail = head;
+                tail->next = nullptr;
+            }
+            size++;
+            return;
+        }
+        if (pos == size) {
+            Node* lastNode = new Node(val, nullptr);
+            tail->next = lastNode;
+            tail = lastNode;
+            size++;
+            return;
+        }
+        Node* curr = head;
+
+        for (size_t i = 0; i < pos-1; i++) {
+            curr = curr->next;
+        }
+        Node* temp = curr->next;
+        if(temp == nullptr){
+            Node* newNode = new Node(val, nullptr);
+            curr->next = newNode;
+        }
+        else{
+            Node* newNode = new Node(val, temp);
+            curr->next = newNode;
+        }
+        
+        
+        size++;
+    }
+
+    void print() {
+        if (head == nullptr) { return; }
+        Node* curr = head;
+        while (curr) {
+            cout << curr->data << '#';
+            curr = curr->next;
+        }
+    }
+
+    void remove(int pos) {
+        if (pos < 0 || pos >= size) {
+            cout << "remove_failed";
+            return;
+        }
+        if(head==tail&&pos==0){
+            head = tail = nullptr;
+            size--;
+            return;
+        }
+        if (pos == 0) {
+            Node* oldHead = head;
+            head = head->next;
+            //delete oldHead;
+            size--;
+            return;
+        }
+        if (pos == size - 1) {
+            Node* current = head;
+            while (current) {
+                if (current->next == tail) { break; }
+                current = current->next;
+            }
+            Node* temp = current->next;
+            tail = current;
+            tail->next = nullptr;
+            //delete temp;
+            size--;
+            return;
+        }
+        Node* curr = head;
+        for (size_t i = 0; i < pos-1; i++) {
+            curr = curr->next;
+        }
+        Node* toBeDel = curr->next;
+        curr->next = toBeDel->next;
+        delete toBeDel;
+        size--;
+    }
+
+    void reverse() {
+        if (head == nullptr) {
+            return;
+        }
+        if (head->next == nullptr) {
+            return;
+        }
+        Node* oldHead = head;
+        Node* prev = nullptr;
+        Node* curr = head;
+        while (curr) {
+            Node* temp = curr->next;
+            curr->next = prev;
+            prev = curr;
+            curr = temp;
+        }
+        head = prev;
+        tail = oldHead;
+        tail->next = nullptr;
+
+    }
+
+    void remove_all(int val) {
+        Node* curr = head;
+        Node* prev = nullptr;
+        while (head && head->data == val) {
+            Node* temp = head->next;
+            delete head;
+            head = temp;
+            size--;
+        }
+        curr=head;
+        while (curr) {
+            if (curr->data == val) {
+                Node* temp = curr->next;
+                prev->next = curr->next;
+                delete curr;
+                size--;
+                curr = temp;
+                continue;
+            }
+            prev = curr;
+            curr = curr->next;
+        }
+    }
+
+    void group(int start, int end) {
+        if (start<0 || end >= size || start>end) {
+            std::cout << "fail_grouping";
+            return;
+        }
+        if (start == end) { return; }
+
+        Node* curr = head;
+        Node* prev = nullptr;
+        int currentPos = 0;
+        int numberOfIters = end - start + 1;
+        bool started = false;
+        int sum = 0;
+        Node* tempPrevToSum = nullptr;
+        Node* tempNextToSum = nullptr;
+
+        if (start == 0) {
+            for (int i = 0; i <= end; i++) {
+                sum += curr->data;
+                curr = curr->next;
+                delete head;
+                head = curr;
+            }
+            add(sum, 0);
+            return;
+        }
+        while (curr) {
+            if (currentPos == start) {
+                started = true;
+                sum += curr->data;
+                tempPrevToSum = prev;
+                prev->next = curr->next;
+                curr = curr->next;
+                size--;
+                //continue;
+            }
+            else if (currentPos == end) {
+                started = false;
+                sum += curr->data;
+                tempNextToSum = curr->next;
+                Node* nodeToBeAdded = new Node(sum);
+                prev->next = nodeToBeAdded;
+                nodeToBeAdded->next = curr->next;
+                break;
+            }
+            else if (started) {
+                sum += curr->data;
+                prev->next = curr->next;
+                curr = curr->next;
+                size--;
+            }
+
+            else {
+                prev = curr;
+                curr = curr->next;
+            }
+
+            currentPos++;
+        }
+    }
+
+    void count(int val) {
+        Node* curr = head;
+        int counter = 0;
+        while (curr) {
+            if (curr->data == val) {
+                counter++;
+            }
+            curr = curr->next;
+        }
+        cout<< counter;
+    }
+
+    void is_palindrome() {
+        Node* first = head;
+        //Node* second = head;
+        //cout << "()" << size << '\n';
+        //print();
+        vector<int> num={0};
+        for(int i=0;i<size/2;i++){
+            num.push_back(first->data);
+                first=first->next;
+            
+            }
+        if(size%2==1){
+            first = first->next;
+        }
+        while(first){
+            int popped=num.back();
+            num.pop_back();
+            if(first->data!=popped){
+                //cout << first->data << ' ' << second->data << '\n';
+                cout << "false";
+                return;
+            }
+            first = first->next;
+            //second = second->next;
+        }
+        cout << "true";
+    }
+
+    ~LinkedList() {
+        if (size == 0) { return; }
+        Node* temp;
+        for (Node* node = head->next; node != nullptr;) {
+            temp = node->next;
+            delete node;
+            node = temp;
+        }
+    }
+    LinkedList(){
+        head = nullptr;
+        tail = nullptr;
+        size = 0;
+    }
+private:
+    Node* head;
+    Node* tail;
+    int size;
+};
