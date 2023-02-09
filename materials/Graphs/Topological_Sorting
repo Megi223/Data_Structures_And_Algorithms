@@ -1,0 +1,49 @@
+#include <iostream>
+#include <list>
+#include <cstring>
+#include <list>
+#include <unordered_map>
+#include <stack>
+#include <set>
+#include <unordered_set>
+
+using namespace std;
+
+void dfs(char symbol, unordered_map<char, list<char>>& graph, unordered_map<char, bool>& visited, stack<char>& order)
+{
+    visited[symbol] = true;
+    for (auto iter2 = graph[symbol].begin(); iter2 != graph[symbol].end(); iter2++)
+    {
+        if (!visited[*iter2]) {
+            dfs(*iter2, graph, visited, order);
+        }
+    }
+    order.push(symbol);
+}
+
+int main() {
+    size_t N;
+    string current;
+    cin >> N;
+    string prev = "";
+    unordered_map<char, list<char>> graph;
+   
+    // graph population 
+    
+    unordered_map<char, bool> visited{};
+    stack<char> order;
+    for (auto iter = graph.begin(); iter != graph.end(); iter++)
+    {
+        char currentSymbol = (*iter).first;
+        if (!visited[currentSymbol]) {
+            dfs(currentSymbol, graph, visited, order);
+        }
+    }
+    
+    while (!order.empty())
+    {
+        char currentSymbol = order.top();
+        order.pop();
+        
+        cout << currentSymbol << " ";
+    }
