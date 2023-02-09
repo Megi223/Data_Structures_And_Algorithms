@@ -1,0 +1,31 @@
+class Solution {
+public:
+    bool wordPattern(string pattern, string s) {
+        unordered_map<char,string> hash;
+        set<string> occupiedWords;
+        std::istringstream istr(s);
+
+         std::string word; 
+         size_t cnt = 0;
+        while(istr>>word){
+            if(cnt==pattern.size()){
+                return false;
+            }
+            if(hash.find(pattern[cnt])==hash.end() && occupiedWords.find(word)==occupiedWords.end()){
+                hash[pattern[cnt]]=word;
+                occupiedWords.insert(word);
+                cnt++;
+            }
+            else{
+                if(hash[pattern[cnt]]!=word){
+                    return false;
+                }
+                cnt++;
+
+            }
+
+        }
+        if(cnt<pattern.size()){return false;}
+        return true;
+    }
+};
