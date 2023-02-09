@@ -1,0 +1,56 @@
+#include <bits/stdc++.h>
+using namespace std;
+
+
+unordered_map<size_t,vector<pair<size_t,size_t>>> graph;
+unordered_map<size_t, size_t> distances;
+unordered_map<size_t, size_t> paths;
+
+size_t N;
+
+void dijkstra(size_t start){
+    for(size_t i=1;i<=N;i++){
+        distances[i] = LONG_MAX;
+    }
+    distances[start] = 0;
+    paths[start]=1;
+    priority_queue<pair<size_t,size_t>,vector<pair<size_t,size_t>>,greater<pair<size_t,size_t>>> pq;
+    pq.push({0,start});
+    while(!pq.empty()){
+        
+        if (pq.top().first != distances[pq.top().second]) { pq.pop(); continue; }
+        size_t current = pq.top().second;
+        pq.pop();
+        for(auto e : graph[current]){
+            if(distances[e.first]>distances[current]+e.second){
+                distances[e.first]=distances[current]+e.second;
+                pq.push({distances[e.first],e.first});
+               paths[e.first]=paths[current]%1000000007;
+            }
+            else if(distances[e.first]==distances[current]+e.second){
+                
+                paths[e.first]=(paths[e.first]+paths[current])%1000000007;
+            }
+        }
+    }
+}
+
+
+
+int main() {
+    size_t M, from, to, weight, s;
+    cin >> N >> M;
+    
+    for(size_t i = 0;i<M;i++){
+        cin >> from >> to >> weight;
+        graph[from].push_back({to,weight});
+        
+    }
+    
+    dijkstra(1);
+    if(distances[N]==LONG_MAX){cout << -1 << ' ' << 0;}
+    else{
+        cout << distances[N] << ' ' << paths[N]%1000000007;
+    }
+}
+
