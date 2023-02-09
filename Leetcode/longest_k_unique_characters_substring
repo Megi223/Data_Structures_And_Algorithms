@@ -1,0 +1,56 @@
+/*find the longest substring of a given string with exactly k distinct elements*/
+
+class Solution{
+  public:
+    int longestKSubstr(string s, int k) {
+    set<char> c;
+    unordered_map<char,long long int> encounters;
+		queue<char> q;
+		size_t ans = 0;
+		size_t start =0;
+		size_t end = 0;
+		for(size_t i=0;i<s.size();i++){
+			q.push(s[i]);
+			c.insert(s[i]);
+			encounters[s[i]]++;
+			
+			if(c.size()>k){
+			    char toRemove = q.front();
+			    
+				while(encounters[toRemove]>0){
+				    
+				    char removed = q.front();
+				    encounters[q.front()]--;
+				    if(encounters[q.front()]==0){
+				        c.erase(q.front());
+				    }
+					
+					q.pop();
+					start++;
+					
+					if(c.size()==k && encounters[removed]==0){
+					    
+					    break;
+					}
+					
+				}
+			}
+			
+			if(q.size()>ans && c.size()==k){
+				ans = q.size();
+				end = i;
+			}
+			
+		}
+		
+		string answer="";
+		for(size_t i=start;i<=end;i++){
+			answer+=s[i];
+		}
+		if(end-start==0){
+		    return -1;
+		}
+		
+		return ans;
+    }
+};
