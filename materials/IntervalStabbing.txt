@@ -1,0 +1,80 @@
+// Interval stabbing queries
+
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <climits>
+#include <map>
+using namespace std;
+struct TimeStamp {
+    size_t start;
+    size_t end;
+};
+
+struct ComparatorStart {
+    bool operator()(TimeStamp* f, TimeStamp* s) {
+        if (f->start == s->start) {
+            return f->end > s->end;
+        }
+        return f->start > s->start;
+    }
+};
+
+struct ComparatorEnd {
+    bool operator()(TimeStamp* f, TimeStamp* s) {
+        if (f->end == s->end) {
+            return f->start > s->start;
+        }
+        return f->end > s->end;
+    }
+};
+int main() {
+    size_t N, Q, currentQuery, start, end;
+    cin >> N >> Q;
+    vector<pair<size_t, size_t>> arr;
+    priority_queue<TimeStamp*, vector<TimeStamp*>, ComparatorStart> ascByStart;
+    priority_queue<TimeStamp*, vector<TimeStamp*>, ComparatorEnd> ascByEnd;
+
+    
+    for (size_t i = 0; i < N; i++) {
+        cin >> start >> end;
+        TimeStamp* ts = new TimeStamp();
+        ts->start = start;
+        ts->end = end;
+        ascByStart.push(ts);  
+    }
+
+    map<size_t, size_t> queriesMap;
+    vector<pair<size_t, size_t>> originalOrder;
+
+    for (size_t i = 0; i < Q; i++)
+    {
+        cin >> currentQuery;
+        queriesMap.insert(make_pair(currentQuery, 0));
+        originalOrder.push_back(make_pair(currentQuery, 0));
+    }
+   
+    auto iter = queriesMap.begin();
+    for (size_t i = 0; i < Q; i++)
+    {
+        auto q = iter->first;
+        while (!ascByStart.empty() && ascByStart.top()->start <= q) {
+            ascByEnd.push(ascByStart.top());
+            ascByStart.pop();
+        }
+        while (!ascByEnd.empty() && ascByEnd.top()->end < q) {
+            ascByEnd.pop();
+        }
+        iter->second = ascByEnd.size();
+        iter++;
+    }
+
+    for (size_t i = 0; i < Q; i++)
+    {
+        cout << queriesMap[originalOrder[i].first] << ' ';
+    }
+
+}
