@@ -1,0 +1,77 @@
+
+/*Summary of solution: 
+for every edge we check if there is a cycle without it
+    - if there is: this isn't the answer for the edge which should be removed
+    - if there isn't: then this is exactluy the edge we are looking for
+ note:we iterate through edges from end to begin in order to find the last edge in the input which can be an answer (as per instructions of the task)
+ */
+#include <vector>
+#include <unordered_map>
+#include <set>
+#include <list>
+
+using namespace std;
+
+class Solution {
+public:
+    int withoutVertex = 0;
+    int withoutVertexSec = 0;
+    unordered_map<int, bool> visited;
+    unordered_map<int, list<int>> graph;
+    bool findCycle(int v, int parent) {
+        visited[v] = true;
+        for (auto neighbour : graph[v]) {
+            if ((v == withoutVertex && neighbour == withoutVertexSec) ||
+                (v == withoutVertexSec && neighbour == withoutVertex)) {
+                continue;
+            }
+            if (neighbour != parent && visited[neighbour]) {
+                return true;
+            }
+            if (!visited[neighbour]) {
+                findCycle(neighbour, v);
+            }
+
+        }
+        return false;
+    }
+
+    vector<int> findRedundantConnection(vector<vector<int>>& edges) {
+        set<int> vertices;
+        for (int i = 0; i < edges.size(); i++) {
+            int first = edges[i][0];
+            int second = edges[i][1];
+            graph[first].push_back(second);
+            graph[second].push_back(first);
+            vertices.insert(first);
+            vertices.insert(second);
+        }
+        vector<int> ans;
+
+        for (int j = edges.size() - 1; j >= 0; j--) {
+            withoutVertex = edges[j][0];
+            withoutVertexSec = edges[j][1];
+            bool res = false;
+            visited = {};
+            // it can be a random vertex to start the dfs
+            res = findCycle(1, 0);
+            bool flag = false;
+            // the graph should be all connected in order to be a tree
+            for (int y = 1; y <= vertices.size(); y++) {
+                
+                if (!visited[y]) {
+                    flag = true;
+                    break;
+                }
+
+            }
+            if (flag) { continue; }
+            
+            if (!res) {
+                ans = edges[j];
+                break;
+            }
+        }
+        return ans;
+    }
+};
