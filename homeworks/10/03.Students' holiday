@@ -1,0 +1,161 @@
+#include <iostream>
+#include <unordered_map>
+#include <list>
+#include <queue>
+#include <map>
+#include <set>
+#include <algorithm>
+
+using namespace std;
+
+
+void bfsLevel(size_t node, size_t N, unordered_map<size_t, size_t>& nodePath, unordered_map<size_t, list<size_t>>& graph) {
+    queue<size_t> elements;
+    elements.push(node);
+    size_t length = 0;
+    size_t cntAdded = 0;
+    size_t cntCurrentLevel = 1;
+    bool* visited = new bool[N] {false };
+    visited[node - 1] = true;
+
+    while (!elements.empty()) {
+
+        for (size_t j = 0; j < cntCurrentLevel; j++)
+        {
+            size_t curr = elements.front();
+
+            nodePath[curr] = length;
+            elements.pop();
+
+            for (auto i : graph[curr])
+            {
+
+                if (!visited[i - 1]) {
+                    elements.push(i);
+                    visited[i - 1] = true;
+                    cntAdded++;
+                }
+            }
+        }
+        length++;
+        cntCurrentLevel = cntAdded;
+        cntAdded = 0;
+    }
+}
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+
+    size_t Q, N, M, K, from, to;
+    cin >> Q;
+
+    for (size_t i = 0; i < Q; i++)
+    {
+        cin >> N >> M;
+
+
+        set<pair<size_t, size_t>> input;
+        unordered_map<size_t, list<size_t>> graph;
+
+        for (size_t j = 0; j < M; j++)
+        {
+            cin >> from >> to;
+
+            graph[from].push_back(to);
+            graph[to].push_back(from);
+            if (from < to) {
+                input.insert({ from,to });
+            }
+            else {
+                input.insert({ to,from });
+            }
+
+        }
+
+        cin >> K;
+        unordered_map<size_t, size_t> nodePath{};
+        unordered_map<size_t, long long int> ans{};
+
+        bfsLevel(K, N, nodePath, graph);
+
+        size_t current = 1;
+        size_t cntFilled = 0;
+        deque<long long int> nonAdjacentToK;
+        vector<long long int> adjacentVector;
+
+        for (size_t n = 1; n <= N; n++)
+        {
+            if (nodePath[n] != 1 && n != K) {
+                ans[n] = current;
+                
+                nonAdjacentToK.push_back(n);
+
+
+            }
+            else if (nodePath[n] == 1 && n != K) {
+                ans[n] = 2;
+                adjacentVector.push_back(n);
+            }
+        }
+        cntFilled += nonAdjacentToK.size();
+        nonAdjacentToK.push_back(-1);
+
+        size_t counter = 2;
+        size_t addedToNA = 0;
+
+        while (true)
+        {
+            if (nonAdjacentToK.front() == -1) {
+                nonAdjacentToK.pop_front();
+                counter++;
+            }
+            if (nonAdjacentToK.empty()) { break; }
+            size_t nonAdjacent = nonAdjacentToK.front();
+            nonAdjacentToK.pop_front();
+            addedToNA = 0;
+            for (size_t as = 0; as < adjacentVector.size(); as++)
+            {
+                size_t adjacent = adjacentVector[as];
+                if (adjacent == 0) { continue; }
+                size_t smaller = adjacent < nonAdjacent ? adjacent : nonAdjacent;
+                size_t bigger = adjacent < nonAdjacent ? nonAdjacent : adjacent;
+                if (input.find({ smaller,bigger }) != input.end()) {
+                    //ans[adjacent]++;
+                }
+                else {
+                    nonAdjacentToK.push_back(adjacent);
+                    adjacentVector[as] = 0;
+                    addedToNA++;
+                    ans[adjacent] = counter;
+                    cntFilled++;
+                    if (cntFilled == N - 1) { 
+                        break;
+                    }
+                }
+            }
+            if (cntFilled == N - 1) {
+                break;
+            }
+            if (addedToNA > 0) {
+                nonAdjacentToK.push_back(-1);
+
+            }
+
+        }
+
+
+        for (size_t as = 0; as < adjacentVector.size(); as++) {
+            if (adjacentVector[as] != 0) {
+                ans[adjacentVector[as]] = -1;
+            }
+        }
+
+
+        for (size_t n = 1; n <= N; n++)
+        {
+            if (n == K) { continue; }
+            cout << ans[n] << ' ';
+        }
+        cout << '\n';
+    }
+}
