@@ -1,0 +1,63 @@
+#include <iostream>
+#include <vector>
+#include <unordered_map>
+#include <queue>
+#include <list>
+using namespace std;
+
+unordered_map<size_t, list<size_t>> graph;
+unordered_map<size_t, size_t> nodeComponent;
+
+
+void bfs(size_t node,bool* visited,size_t currentNodeComponent) {
+    queue<size_t> elements;
+    elements.push(node);
+    
+    while (!elements.empty()) {
+        size_t curr = elements.front();
+        
+        nodeComponent[curr] = currentNodeComponent;
+        elements.pop();
+
+        for (auto i : graph[curr])
+        {
+            
+            if (!visited[i - 1]) {
+                elements.push(i);
+                visited[i - 1] = true;
+            }
+        }
+    }
+}
+
+
+int main() {
+    
+    size_t N, M, from, to, K;
+    cin >> N >> M;
+    
+    
+    bool* visited = new bool[N] {false};
+    for (size_t i = 0; i < M; i++)
+    {
+        cin >> from >> to;
+        graph[from].push_back(to);
+        graph[to].push_back(from);
+
+    }
+    size_t currentCompNumber = 1;
+    for (size_t i = 0; i < N; i++)
+    {
+        if (!visited[i]) {
+            bfs(i+1, visited, currentCompNumber);
+            currentCompNumber++;
+        }
+    }
+    cin >> K;
+    for (size_t i = 0; i < K; i++)
+    {
+        cin >> from >> to;
+        cout << (nodeComponent[from] == nodeComponent[to]) << ' ';
+    }
+
+}
