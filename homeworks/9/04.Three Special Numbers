@@ -1,0 +1,98 @@
+#include <iostream>
+#include <unordered_map>
+#include <set>
+#include <map>
+#include <vector>
+using namespace std;
+
+int main() {
+    size_t N, M, current;
+    cin >> N >> M;
+    // first - number ; second - number of encounters
+    unordered_map<size_t, size_t> m;
+    unordered_map<size_t, size_t> mCopy;
+    unordered_map<size_t, size_t> passedEls;
+    unordered_map<size_t, size_t> thirdCopy;
+    //multimap<size_t, size_t> numbersPositions;
+    vector<size_t> input;
+    for (size_t i = 0; i < N; i++)
+    {
+        cin >> current;
+        m[current]++;
+        mCopy[current]++;
+        thirdCopy[current]++;
+        input.push_back(current);
+        //numbersPositions.insert({ current,i });
+    }
+
+    size_t ans = 0;
+    if (M == 1) {
+        for (auto it = m.begin(); it != m.end(); it++)
+        {
+            if (it->second >= 3) {
+
+                ans += ((it->second) * (it->second - 1) * (it->second - 2)) / 6;
+            }
+        }
+        cout << ans;
+        return 0;
+    }
+    for (size_t i = 0; i <= N - 3; i++)
+    {
+        size_t current = input[i];
+        m[current]--;
+        size_t fWanted = M * current;
+        if (m[fWanted] == 0) { continue; }
+
+        size_t sWanted = M * M * current;
+        if (m[sWanted] == 0) { continue; }
+        ans += (m[fWanted] * m[sWanted]);
+
+
+    }
+    //cout << "ans:" << ans << '\n';
+    size_t ans1 = 0;
+    for (long long int i = N - 1; i >= 2; i--)
+    {
+        size_t current = input[i];
+        mCopy[current]--;
+        size_t fWanted = 0;
+        if (current % M == 0) {
+            fWanted = current / M;
+            if (mCopy[fWanted] == 0) { continue; }
+        }
+        else { continue; }
+        size_t sWanted = 0;
+        if (fWanted % M == 0) {
+            sWanted = fWanted / M;
+            if (mCopy[sWanted] == 0) { continue; }
+        }
+        else { continue; }
+
+
+        ans1 += (mCopy[fWanted] * mCopy[sWanted]);
+    }
+    ans = min(ans, ans1);
+    size_t ans2 = 0;
+    for (size_t i = 0; i <= N - 2; i++)
+    {
+        size_t current = input[i];
+        passedEls[current]++;
+        thirdCopy[current]--;
+        size_t fWanted = 0;
+        if (current % M == 0) {
+            fWanted = current / M;
+            if (passedEls[fWanted] == 0) { continue; }
+        }
+        else {
+            continue;
+        }
+        size_t sWanted = M * current;
+        if (thirdCopy[sWanted] == 0) { continue; }
+        ans2 += (passedEls[fWanted] * thirdCopy[sWanted]);
+    }
+
+    ans = min(ans,ans2);
+    cout << ans;
+
+}
