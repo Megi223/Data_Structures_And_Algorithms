@@ -1,0 +1,50 @@
+#include <string>
+#include <iostream>
+#include <set>
+#include <unordered_set>
+#include <cmath>
+using namespace std;
+
+int main() {
+    string first;
+    string second;
+
+    cin >> first >> second;
+
+    string shorterString = first.size() > second.size() ? second : first;
+    string longerString = first.size() > second.size() ? first : second;
+    // ans is somewhere between 0 and shorterString.size();
+    
+    size_t currentCount = 0;
+    size_t maxSubstrLen = 0;
+    
+    for (size_t i = 0; i < longerString.size(); i++)
+    {
+        char character = longerString[i];
+        for (size_t j = 0; j < shorterString.size(); j++)
+        {
+            if (shorterString[j] == character) {
+
+                currentCount++;
+                
+                size_t index = j + 1;
+                for (size_t iter = i+1; iter < longerString.size(); iter++)
+                {
+                    if (longerString[iter] != shorterString[index] || index == shorterString.size()) {
+                        maxSubstrLen = max(maxSubstrLen, currentCount);
+                        currentCount = 0;
+                        j = index;
+                        break;
+                    }
+                    if (longerString[iter] == shorterString[index]) {
+                        index++;
+                        currentCount++;
+                    }
+                }
+                
+            }
+        }
+    }
+    cout << maxSubstrLen;
+    
+}
