@@ -1,0 +1,74 @@
+#include <iostream>
+#include <queue>
+#include <algorithm>
+using namespace std;
+
+struct Product {
+    size_t startTime;
+    size_t duration;
+    size_t index;
+    Product() :startTime(0), duration(0), index(0) {}
+    Product(size_t _startTime, size_t _duration, size_t _index) : startTime(_startTime), duration(_duration), index(_index) {
+    }
+};
+size_t currentTime = 0;
+struct MyComparator {
+    bool operator()(const Product* first, const Product* second) {
+        if ((first->startTime <= currentTime && second->startTime <= currentTime) || first->startTime==second->startTime) {
+            if (first->duration == second->duration) {
+                return first->index > second->index;
+            }
+            return first->duration > second->duration;
+        }
+        
+        return first->startTime > second->startTime;
+        
+    }
+};
+bool sortBy(Product* first, Product* second) {
+
+    if (first->startTime == second->startTime) {
+        if (first->duration == second->duration) {
+            return first->index < second->index;
+        }
+        return first->duration < second->duration;
+    }
+
+    return first->startTime < second->startTime;
+}
+
+int main() {
+    size_t N, start, duration;
+    cin >> N;
+    priority_queue < Product*, vector<Product*>, MyComparator> products;
+    vector<Product*> input;
+    for (size_t i = 0; i < N; i++)
+    {
+        cin >> start >> duration;
+        Product* product = new Product(start, duration, i);
+        input.push_back(product);
+    }
+    sort(input.begin(), input.end(), sortBy);
+    products.push(input[0]);
+    currentTime = products.top()->startTime;
+    int j = 1;
+    for (size_t i = 0; i < N; i++)
+    {
+        cout << products.top()->index << ' ';
+        currentTime += products.top()->duration;
+        products.pop();
+        if (j<N && input[j]->startTime > currentTime && products.empty()) {
+            currentTime = input[j]->startTime;
+        }
+        
+        while (j < N && input[j]->startTime <= currentTime) {
+            
+            products.push(input[j]);
+            j++;
+        }
+        
+       
+
+    }
+    
+}
