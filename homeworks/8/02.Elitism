@@ -1,0 +1,87 @@
+#include <iostream>
+#include <queue>
+#include <iomanip>
+#include <cmath>
+using namespace std;
+
+double roundCustom(double value)
+{
+    double res = ceil(value * 10.0) / 10.0;
+    return res;
+}
+
+void balanceEven(priority_queue<size_t>& smaller, priority_queue<size_t, vector<size_t>, greater<size_t>>& bigger) {
+    while (smaller.size() != bigger.size()) {
+        if (bigger.size() > smaller.size()) {
+            smaller.push(bigger.top());
+            bigger.pop();
+        }
+        else {
+            bigger.push(smaller.top());
+            smaller.pop();
+        }
+
+    }
+}
+
+void balance(priority_queue<size_t>& smaller, priority_queue<size_t, vector<size_t>, greater<size_t>>& bigger) {
+    if (bigger.top() < smaller.top()) {
+        smaller.push(bigger.top());
+        bigger.pop();
+    }
+    while (smaller.size() - 1 != bigger.size()) {
+        bigger.push(smaller.top());
+        smaller.pop();
+    }
+    
+    
+}
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(nullptr);
+    size_t N;
+    cin >> N;
+    double sum = 0.0;
+    double current;
+    priority_queue<size_t> smaller;
+    priority_queue<size_t, vector<size_t>, greater<size_t>> bigger;
+    for (size_t i = 1; i <= N; i++)
+    {
+        cin >> current;
+
+        if (i == 1) {
+            cout << fixed << setprecision(1) << roundCustom(current) << '\n';
+            smaller.push(current);
+            continue;
+        }
+        if (i == 2) {
+            if (current > smaller.top()) {
+                bigger.push(current);
+            }
+            else {
+                bigger.push(smaller.top());
+                smaller.pop();
+                smaller.push(current);
+            }
+            sum = (smaller.top() + bigger.top()) / 2.0;
+            cout << fixed << setprecision(1) << roundCustom(sum) << '\n';
+            continue;
+        }
+        if (i % 2 == 0) {
+            smaller.push(current);
+            balanceEven(smaller, bigger);
+            sum = (smaller.top() + bigger.top()) / 2.0;
+            cout << fixed << setprecision(1) << roundCustom(sum) << '\n';
+            continue;
+        }
+
+        smaller.push(current);
+        balance(smaller, bigger);
+
+        if (i % 2 == 1) {
+            cout << fixed << setprecision(1) << roundCustom(smaller.top()) << '\n';
+        }
+
+    }
+}
