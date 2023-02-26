@@ -1,0 +1,117 @@
+#include <iostream>
+#include <map>
+#include <vector>
+#include <set>
+using namespace std;
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t N, K, A, Q;
+    cin >> N >> K >> A >> Q;
+    size_t pos;
+    // this is the max number of shoots he will need; spotting the lie can come beforehand
+    /*if (Q > N - K * A) {
+        cout << N - K * A + 1;
+        return 0;
+    }*/
+    size_t currentMaxPos = 0;
+    size_t currentMinPos = N;
+    size_t cntShips = 0;
+    set<size_t> shoots;
+    size_t totalPosRequired = K * A;
+    size_t currentMaxCountoOfShips = 0;
+    for (size_t i = 1; i <= Q; i++)
+    {
+
+        cin >> pos;
+        cntShips = 0;
+        if (pos > currentMaxPos) {
+            currentMaxPos = pos;
+        }
+        if (pos < currentMinPos) {
+            currentMinPos = pos;
+        }
+
+        if (shoots.find(pos) != shoots.end()) {
+            continue;
+        }
+
+        auto inserted=shoots.insert(pos);
+        if (totalPosRequired > N - i) {
+            cout << i;
+            return 0;
+        }
+
+        if (shoots.size() == 1 || shoots.size()==2) {
+            cntShips += ((N - currentMaxPos) / (A + 1)) + (((N - currentMaxPos) % (A + 1)) / A);
+
+            cntShips += ((currentMinPos - 1) / (A + 1)) + (((currentMinPos - 1) % (A + 1)) / A);
+            if (cntShips >= K && shoots.size()==1) {
+                currentMaxCountoOfShips = cntShips;
+                continue;
+            }
+            else if (cntShips < K && shoots.size() == 1) {
+                cout << i;
+                return 0;
+            }
+
+            /*size_t diff = currentMaxPos - currentMinPos - 1 - (i - 2);
+            size_t needed = (K - cntShips) * A;
+            if (needed > diff) {
+                cout << i;
+                return 0;
+            }*/
+
+            if (shoots.size() == 2) {
+                cntShips += ((currentMaxPos - currentMinPos - 1) / (A + 1)) + (((currentMaxPos - currentMinPos - 1) % (A + 1)) / A);
+                if (cntShips < K) {
+                    cout << i;
+                    return 0;
+                }
+                else {
+                    currentMaxCountoOfShips = cntShips;
+                    continue;
+                }
+            }
+        }
+        else {
+            auto prevShootIter = (shoots.lower_bound(pos));
+            size_t prevShotValue = 0;
+            if (prevShootIter != shoots.begin()) {
+                prevShootIter--;
+                prevShotValue = *prevShootIter;
+            }
+            
+            auto nextShotIter = shoots.upper_bound(pos);
+            size_t nextShotValue = N+1;
+            if (nextShotIter != shoots.end()) {
+                //nextShotIter++;
+                nextShotValue = *nextShotIter;
+            }
+            size_t shipsWithoutMiddle = ((nextShotValue - prevShotValue - 1) / (A + 1)) + (((nextShotValue - prevShotValue - 1) % (A + 1)) / A);
+            size_t shipsWithMiddle = 0;
+            shipsWithMiddle += ((nextShotValue - pos - 1) / (A + 1)) + (((nextShotValue - pos - 1) % (A + 1)) / A);
+            shipsWithMiddle += ((pos - prevShotValue - 1) / (A + 1)) + (((pos - prevShotValue - 1) % (A + 1)) / A);
+            if (shipsWithMiddle == shipsWithoutMiddle) {
+                continue;
+            }
+            else if (shipsWithMiddle < shipsWithoutMiddle) {
+                if (currentMaxCountoOfShips - (shipsWithoutMiddle - shipsWithMiddle) >= K) {
+                    currentMaxCountoOfShips = currentMaxCountoOfShips - (shipsWithoutMiddle - shipsWithMiddle);
+                }
+                else {
+                    cout << i;
+                    return 0;
+                }
+            }
+
+
+        }
+
+
+
+    }
+    cout << -1;
+    return 0;
+}
