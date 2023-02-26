@@ -1,0 +1,55 @@
+#include <iostream>
+#include <set>
+#include <queue>
+
+using namespace std;
+
+int main() {
+    size_t Q, N, cookieNum;
+    cin >> Q;
+    for (size_t i = 0; i < Q; i++)
+    {
+        cin >> N;
+        set<size_t> cookies;
+        queue<size_t> seq;
+        size_t maxCount = 0;
+
+        for (size_t j = 0; j < N; j++)
+        {
+            cin >> cookieNum;
+            auto iter = cookies.find(cookieNum);
+            if (iter == cookies.end()) {
+                cookies.insert(cookieNum);
+                seq.push(cookieNum);
+            }
+            else {
+                if (seq.size() > maxCount) {
+                    maxCount = seq.size();
+                }
+                
+                cookies.erase(iter);
+                
+                while (!seq.empty()) {
+                    if (seq.front() != cookieNum) {
+                        cookies.erase(seq.front());
+                        seq.pop();
+
+                     }
+                    else {
+                        seq.pop();
+                        break;
+                    }
+                }
+                
+                
+               
+                cookies.insert(cookieNum);
+                seq.push(cookieNum);
+            }
+        }
+        if (seq.size() > maxCount) {
+            maxCount = seq.size();
+        }
+        cout << maxCount << '\n';
+    }
+}
