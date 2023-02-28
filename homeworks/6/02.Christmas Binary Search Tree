@@ -1,0 +1,146 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+using namespace std;
+struct Node {
+    size_t value;
+    Node* leftChild;
+    Node* rightChild;
+
+    Node(size_t val) {
+        this->value = val;
+        this->leftChild = nullptr;
+        this->rightChild = nullptr;
+    }
+
+    Node* addLeftChild(size_t val) {
+        if (this->leftChild == nullptr) {
+            this->leftChild = new Node(val);
+        }
+        
+        return leftChild;
+    }
+    Node* addRightChild(size_t val) {
+        if (this->rightChild == nullptr) {
+            this->rightChild = new Node(val);
+
+        }
+        return rightChild;
+    }
+};
+
+
+class Tree {
+    Node* root;
+public:
+    Tree(Node* root) {
+        this->root = root;
+    }
+    Node* getRoot() {
+        return this->root;
+    }
+    void inOrderTraversal(Node* curr, vector<size_t>& ans) {
+        if (curr == nullptr) { return; }
+        inOrderTraversal(curr->leftChild, ans);
+        ans.push_back(curr->value);
+        inOrderTraversal(curr->rightChild, ans);
+    }
+};
+bool checkAscending(vector<size_t> vect) {
+    for (size_t i = 0; i < vect.size() - 1; i++)
+    {
+        if (vect[i] >= vect[i + 1]) {
+            return false;
+        }
+    }
+    return true;
+}
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t T;
+    cin >> T;
+    for (size_t j = 0; j < T; j++)
+    {
+        size_t N;
+        cin >> N;
+        size_t A;
+        long long int rowLeft;
+        long long int rowRight;
+        cin >> A >> rowLeft >> rowRight;
+        Node* root = new Node(A);
+        if (N == 1) {
+            cout << 1 << '\n';
+            continue;
+        }
+
+        vector<Node*> leftNeighbours(3000001, nullptr);
+        vector<Node*> rightNeighbours(3000001, nullptr);
+        Tree tree(root);
+        if (rowLeft >= 0) {
+            leftNeighbours[rowLeft] = root;
+
+        }
+        if (rowRight >= 0) {
+            rightNeighbours[rowRight] = root;
+
+        }
+        bool isBST = true;
+        for (size_t i = 1; i < N; i++)
+        {
+            cin >> A >> rowLeft >> rowRight;
+            if (!isBST) {
+                continue;
+            }
+            /*if ((rowLeft >= 0 && rowLeft >= N) || (rowRight >= 0 && rowRight >= N) || (rowLeft < 0 && rowLeft != -1) || (rowRight < 0 && rowRight != -1)) {
+                isBST = false;
+                continue;
+            }*/
+            Node* toAddChild = leftNeighbours[i];
+            Node* added = nullptr;
+            if (toAddChild != nullptr) {
+                /*if (toAddChild->value < A) {
+                    isBST = false;
+                    continue;
+                }*/
+                added = toAddChild->addLeftChild(A);
+                
+                if (added == nullptr) {
+                    isBST = false;
+                    continue;
+                }
+                leftNeighbours[i] = nullptr;
+            }
+            else {
+                Node* toAddChild = rightNeighbours[i];
+                /*if (toAddChild == nullptr) {
+                    isBST = false;
+                    continue;
+                }*/
+                /*if (toAddChild->value > A) {
+                    isBST = false;
+                    continue;
+                }*/
+                added = toAddChild->addRightChild(A);
+                if (added == nullptr) {
+                    isBST = false;
+                    continue;
+                }
+                rightNeighbours[i] = nullptr;
+            }
+            if (rowLeft > 0) {
+                leftNeighbours[rowLeft] = added;
+            }
+
+            if (rowRight > 0) {
+                rightNeighbours[rowRight] = added;
+            }
+        }
+        if (isBST) {
+            vector<size_t> inorderTraversed{ 0 };
+            tree.inOrderTraversal(tree.getRoot(), inorderTraversed);
+            isBST = checkAscending(inorderTraversed);
+        }
+        cout << isBST << '\n';
+    }
+}
