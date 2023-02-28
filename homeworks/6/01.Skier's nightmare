@@ -1,0 +1,108 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+using namespace std;
+long long int minX = INT32_MAX;
+long long int maxX = INT32_MIN;
+struct Node {
+    size_t value;
+    long long int X;
+    long long int Y;
+    Node* leftChild;
+    Node* rightChild;
+    Node(size_t val, long long int inputX, long long int inputY) {
+        this->value = val;
+        this->X = inputX;
+        this->Y = inputY;
+        this->leftChild = nullptr;
+        this->rightChild = nullptr;
+    }
+    Node* addLeftChild(size_t val) {
+        this->leftChild = new Node(val, this->X - 1, this->Y + 1);
+        if (this->X - 1 < minX) {
+            minX = this->X - 1;
+        }
+        return leftChild;
+    }
+    Node* addRightChild(size_t val) {
+        this->rightChild = new Node(val, this->X + 1, this->Y + 1);
+        if (this->X + 1 > maxX) {
+            maxX = this->X + 1;
+        }
+        return rightChild;
+    }
+};
+
+class Tree {
+    Node* root;
+public:
+    Tree(Node* root) {
+        this->root = root;
+    }
+    Node* getRoot() {
+        return this->root;
+    }
+    void findSums(Node* cur, size_t*& sums, long long int& offset) {
+        if (cur == nullptr)
+        {
+            return;
+        }
+        findSums(cur->leftChild, sums, offset);
+        sums[cur->X + offset] += cur->value;
+        findSums(cur->rightChild, sums, offset);
+    }
+};
+
+int main() {
+    size_t N;
+    cin >> N;
+    size_t A;
+    long long int rowLeft;
+    long long int rowRight;
+    cin >> A >> rowLeft >> rowRight;
+    Node* root = new Node(A, 0, 0);
+    if (N == 1) {
+        cout << A;
+        return 0;
+    }
+
+    vector<Node*> leftNeighbours(1000000, nullptr);
+    vector<Node*> rightNeighbours(1000000, nullptr);
+    Tree tree(root);
+    leftNeighbours[rowLeft] = root;
+    rightNeighbours[rowRight] = root;
+
+    for (size_t i = 1; i < N; i++)
+    {
+        cin >> A >> rowLeft >> rowRight;
+        Node* toAddChild = leftNeighbours[i];
+        Node* added = nullptr;
+        if (toAddChild != nullptr) {
+            added = toAddChild->addLeftChild(A);
+            leftNeighbours[i] = nullptr;
+        }
+        else {
+            Node* toAddChild = rightNeighbours[i];
+
+            added = toAddChild->addRightChild(A);
+            rightNeighbours[i] = nullptr;
+        }
+        if (rowLeft > 0) {
+            leftNeighbours[rowLeft] = added;
+        }
+
+        if (rowRight > 0) {
+            rightNeighbours[rowRight] = added;
+        }
+    }
+
+    long long int offset = abs(minX);
+    size_t sizeVect = abs(minX) + abs(maxX) + 1;
+    size_t* sums = new size_t[sizeVect]{ 0 };
+    tree.findSums(tree.getRoot(), sums, offset);
+    for (size_t i = 0; i < sizeVect; i++)
+    {
+        cout << sums[i] << ' ';
+    }
+    delete[] sums;
+}
