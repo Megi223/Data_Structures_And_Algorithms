@@ -1,0 +1,87 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+using namespace std;
+struct Node {
+    char value;
+    vector<Node*> children;
+    bool isEnd;
+    Node(char val) {
+        this->value = val;
+        this->children = vector<Node*>(26, nullptr);
+        this->isEnd = false;
+    }
+    Node* addChild(char val) {
+        Node* toBeAdded = new Node(val);
+        this->children[val-'a'] = toBeAdded;
+        return toBeAdded;
+    }
+};
+
+
+class Tree {
+    Node* root;
+public:
+    Tree(Node* root) {
+        this->root = root;
+    }
+    Node* getRoot() {
+        return this->root;
+    }
+    bool containsWord(Node* curr, string queryWord, size_t index) {
+        char currentChar = queryWord[index];
+        Node* wanted = curr->children[currentChar - 'a'];
+        if (wanted == nullptr) {
+            return false;
+        }
+        if (index == queryWord.size() - 1) {
+            if (wanted->isEnd) {
+                return true;
+            }
+            return false;
+        }
+        return containsWord(wanted, queryWord, index+1);
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t N;
+    cin >> N;
+    
+    Node* root = new Node('#');
+    Tree tree(root);
+    
+    string word;
+    for (size_t i = 0; i < N; i++)
+    {
+        cin >> word;
+        Node* currentNode = root;
+        for (size_t j = 0; j < word.size(); j++)
+        {
+            char currentChar = word[j];
+
+            if (currentNode->children[currentChar - 'a'] == nullptr) {
+                currentNode = currentNode->addChild(currentChar);
+            }
+            else {
+                currentNode = currentNode->children[currentChar - 'a'];
+            }
+            if (j == word.size() - 1) {
+                currentNode->isEnd = true;
+            }
+        }
+    }
+
+    size_t Q;
+    cin >> Q;
+    string queryWord;
+    for (size_t i = 0; i < Q; i++)
+    {
+        cin >> queryWord;
+        size_t start = 0;
+        bool res = tree.containsWord(tree.getRoot(), queryWord, start);
+        cout << (res ? "YES" : "NO") << '\n';
+    }
+}
