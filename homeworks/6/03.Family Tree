@@ -1,0 +1,95 @@
+#include <iostream>
+#include <vector>
+#include <limits>
+using namespace std;
+struct Node {
+    size_t value;
+    vector<Node*> children;
+    size_t timeIn;
+    size_t timeOut;
+    Node(size_t val) {
+        this->value = val;
+        this->children = vector<Node*>(0,nullptr);
+        this->timeIn = 0;
+        this->timeOut = 0;
+    }
+    Node* addChild(size_t val) {
+        Node* toBeAdded = new Node(val);
+        this->children.push_back(toBeAdded);
+        return toBeAdded;
+    }
+};
+
+
+class Tree {
+    Node* root;
+public:
+    Tree(Node* root) {
+        this->root = root;
+    }
+    Node* getRoot() {
+        return this->root;
+    }
+    void traverse(Node* curr, size_t& time) {
+        if (curr == nullptr) { return; }
+        curr->timeIn = time;
+        for (size_t i = 0; i < curr->children.size(); i++)
+        {
+            time++;
+            traverse(curr->children[i], time);
+
+            
+
+        }
+        time++;
+        curr->timeOut = time;
+    }
+};
+
+int main() {
+    ios_base::sync_with_stdio(false);
+    cin.tie(NULL);
+    size_t N;
+    cin >> N;
+    size_t a, b;
+    cin >> a >> b;
+    Node* root = new Node(a);
+    Tree tree(root);
+    Node* childNode = root->addChild(b);
+    size_t maxValueNode = max(a,b);
+    vector<Node*> allNodes(1000001, nullptr);
+    allNodes[a] = root;
+    allNodes[b] = childNode;
+    for (size_t i = 1; i < N-1; i++)
+    {
+        cin >> a >> b;
+        if (a > maxValueNode) {
+            maxValueNode = a;
+        }
+        if (b > maxValueNode) {
+            maxValueNode = b;
+        }
+        Node* father = allNodes[a];
+        Node* child = father->addChild(b);
+        allNodes[b] = child;
+    }
+   
+    size_t Q;
+    cin >> Q;
+    size_t time = 0;
+    tree.traverse(tree.getRoot(), time);
+    size_t queryA, queryB;
+    for (size_t i = 0; i < Q; i++)
+    {
+        cin >> queryA >> queryB;
+        Node* nodeA = allNodes[queryA];
+        Node* nodeB = allNodes[queryB];
+
+        if (nodeA!=nullptr && nodeB!=nullptr && nodeA->timeIn < nodeB->timeIn && nodeB->timeOut < nodeA->timeOut) {
+            cout << "YES" << '\n';
+        }
+        else {
+            cout << "NO" << '\n';
+        }
+    }
+}
