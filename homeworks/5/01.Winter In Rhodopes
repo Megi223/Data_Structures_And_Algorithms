@@ -1,0 +1,116 @@
+#include <iostream>
+#include <queue>
+using namespace std;
+
+
+
+
+int main() {
+    size_t N, M, T;
+    cin >> N >> M >> T;
+    //bool** applesVisited = new bool[N][M];
+
+    // matrix of visited apples, corresponding to the particular day
+    size_t** applesVisited = new size_t* [N];
+    for (int i = 0; i < N; ++i)
+    {
+        applesVisited[i] = new size_t[M] {0};
+    }
+    int rottenAppleRow = 0, rottenAppleCol = 0, firstRottenRow = 0, firstRottenCol = 0, secondRottenRow = 0, secondRottenCol = 0;
+    size_t rottenApplesIndexes[4];
+    size_t count = 0;
+    
+    int current = 0;
+    while (cin >> current)
+    {
+        rottenApplesIndexes[count] = current;
+        count++;
+        if (count == 4) {
+            break;
+        }
+    }
+    
+    if (count == 2 || count == 4) {
+        firstRottenRow = rottenApplesIndexes[0];
+        firstRottenCol = rottenApplesIndexes[1];
+        if (count == 4) {
+            secondRottenRow = rottenApplesIndexes[2];
+            secondRottenCol = rottenApplesIndexes[3];
+        }
+    }
+    else {
+        return 0;
+    }
+    //int count = makeApplesRot(T);
+    queue<size_t> rowsToProceed;
+    queue<size_t> colsToProceed;
+    applesVisited[firstRottenRow - 1][firstRottenCol - 1] = 1;
+    //size_t currentRow = firstRottenRow;
+    //size_t currentCol = firstRottenCol;
+    rowsToProceed.push(firstRottenRow-1);
+    colsToProceed.push(firstRottenCol-1);
+    size_t countToProceedOnOneDay = 1;
+    size_t totalRottenApples = 1;
+    if (count == 4) {
+        applesVisited[secondRottenRow - 1][secondRottenCol - 1] = 1;
+        
+        if (secondRottenRow == firstRottenRow && secondRottenCol == firstRottenCol) {
+            
+        }
+        else {
+            rowsToProceed.push(secondRottenRow - 1);
+            colsToProceed.push(secondRottenCol - 1);
+            countToProceedOnOneDay++;
+            totalRottenApples++;
+        }
+        
+    }
+    for (size_t i = 1; i <= T; i++)
+    {
+        size_t newCounter = 0;
+        for (size_t j = 0; j < countToProceedOnOneDay; j++)
+        {
+            int row = rowsToProceed.front();
+            int col = colsToProceed.front();
+            
+            //up - currentRow-1<N
+            if (row - 1 >= 0 && applesVisited[row - 1][col] == 0 ) {
+                applesVisited[row - 1][col] = i;
+                rowsToProceed.push(row - 1);
+                colsToProceed.push(col);
+                newCounter++;
+            }
+            //down
+            if (row + 1 < N && applesVisited[row + 1][col] == 0) {
+                applesVisited[row + 1][col] = i;
+                rowsToProceed.push(row + 1);
+                colsToProceed.push(col);
+                newCounter++;
+            }
+            //left
+            if (col - 1 >= 0 && applesVisited[row][col - 1] == 0) {
+                applesVisited[row][col - 1] = i;
+                rowsToProceed.push(row);
+                colsToProceed.push(col - 1);
+                newCounter++;
+            }
+            // right
+            if (col + 1 < M && applesVisited[row][col + 1] == 0) {
+                applesVisited[row][col + 1] = i;
+                rowsToProceed.push(row);
+                colsToProceed.push(col + 1);
+                newCounter++;
+            }
+
+            rowsToProceed.pop();
+            colsToProceed.pop();
+        }
+        countToProceedOnOneDay = newCounter;
+        totalRottenApples += countToProceedOnOneDay;
+        //cout << "apples after day" << i << ' ' << totalRottenApples << ' ';
+    }
+
+    size_t ans = N * M - totalRottenApples;
+    cout << ans;
+   
+}
