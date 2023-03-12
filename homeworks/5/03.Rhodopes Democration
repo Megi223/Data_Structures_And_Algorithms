@@ -1,0 +1,91 @@
+#include <iostream>
+#include <vector>
+#include <queue>
+#include <stack>
+
+using namespace std;
+
+void battle(stack<long long int>& peopleFromBurevo, queue<long long int>& peopleFromSredets, vector<long long int>& ans) {
+    while (!peopleFromBurevo.empty() && !peopleFromSredets.empty()) {
+        
+        long long int personFromBurevo = peopleFromBurevo.top();
+        long long int personFromSredets = abs(peopleFromSredets.front());
+        if (personFromBurevo == personFromSredets) {
+            peopleFromBurevo.pop();
+            peopleFromSredets.pop();
+        }
+        else if (personFromBurevo > personFromSredets) {
+            peopleFromSredets.pop();
+        }
+        else {
+            peopleFromBurevo.pop();
+        }
+    }
+    
+    while (!peopleFromSredets.empty()) {
+        long long int toAdd = peopleFromSredets.front();
+        peopleFromSredets.pop();
+        ans.push_back(toAdd);
+    }
+}
+
+// Burevo->Sredets - positive numbers - stack - posledniq vlqzul pyrvi se bie LIFO
+// Burevo<-Sredets - negative numbers - queue - purviqt vlqzyl pyrwi se bie FIFO
+int main() {
+    size_t N;
+    cin >> N;
+    vector<long long int> ans;
+    int currentIntelligence;
+    bool encounteredPositive = false;
+    stack<long long int> peopleFromBurevo;
+    queue<long long int> peopleFromSredets;
+    bool startedPushingToQueue = false;
+    for (size_t i = 0; i < N; i++)
+    {
+        cin >> currentIntelligence;
+        if (currentIntelligence < 0 && !encounteredPositive) {
+            ans.push_back(currentIntelligence);
+            continue;
+        }
+        else if (currentIntelligence > 0 && !encounteredPositive) {
+            encounteredPositive = true;
+        }
+        if (currentIntelligence > 0 && startedPushingToQueue) {
+            battle(peopleFromBurevo,peopleFromSredets,ans);
+            startedPushingToQueue = false;
+        }
+        if (currentIntelligence > 0) {
+            peopleFromBurevo.push(currentIntelligence);
+            
+        }
+        else if(currentIntelligence < 0) {
+            peopleFromSredets.push(currentIntelligence);
+            startedPushingToQueue = true;
+        }
+    }
+    if (!peopleFromBurevo.empty() && !peopleFromSredets.empty()) {
+        battle(peopleFromBurevo, peopleFromSredets, ans);
+    }
+    stack<long long int> temp;
+    while (!peopleFromBurevo.empty()) {
+        //queue<long long int> temp;
+        long long int toAdd = peopleFromBurevo.top();
+        peopleFromBurevo.pop();
+        temp.push(toAdd);
+        //ans.push_back(toAdd);
+    }
+    while (!temp.empty()) {
+        long long int toAdd = temp.top();
+        ans.push_back(toAdd);
+        temp.pop();
+    }
+    while (!peopleFromSredets.empty()) {
+        long long int toAdd = peopleFromSredets.front();
+        peopleFromSredets.pop();
+        ans.push_back(toAdd);
+    }
+    for (size_t i = 0; i < ans.size(); i++)
+    {
+        cout << ans[i] << ' ';
+    }
+}
