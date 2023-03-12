@@ -1,0 +1,66 @@
+#include <cmath>
+#include <cstdio>
+#include <vector>
+#include <iostream>
+#include <algorithm>
+#include <queue>
+#include <climits>
+using namespace std;
+
+long long int findMin(queue<long long int> queue, size_t K) {
+    long long int min = queue.front();
+    for (size_t i = 0; i < K; i++)
+    {
+        long long int front = queue.front();
+        if (front < min) {
+            min = queue.front();
+        }
+        queue.pop();
+        queue.push(front);
+
+    }
+    return min;
+}
+
+int main() {
+    size_t N, K;
+    cin >> N >> K;
+    vector<long long int> input;
+    long long int current;
+    for (size_t i = 0; i < N; i++) {
+        cin >> current;
+        input.push_back(current);
+    }
+    queue<long long int> currentWindow;
+    
+    long long int currentMin = INT_MAX;
+    long long int ans = 0;
+    for (size_t i = 0; i < K; i++) {
+        currentWindow.push(input[i]);
+        if (input[i] < currentMin) {
+            currentMin = input[i];
+            
+        }
+    }
+    bool removedMin = false;
+    
+    ans += currentMin;
+    for (size_t i = 0; i < N-K; i++)
+    {
+        if (currentMin == currentWindow.front()) {
+            removedMin = true;
+        }
+        currentWindow.pop();
+        if (removedMin) {
+            currentMin = findMin(currentWindow, K);
+        }
+        currentWindow.push(input[i + K]);
+        if (input[i + K] <= currentMin) {
+            currentMin = input[i + K];
+        }
+        ans += currentMin;
+        removedMin = false;
+    }
+    cout << ans;
+    return 0;
+}
